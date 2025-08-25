@@ -16,7 +16,7 @@ public class Main {
             System.out.println("connected to: " + socket.getInetAddress());
 
             InputStream is = socket.getInputStream();
-            FileOutputStream fos = new FileOutputStream("received.txt");
+            FileOutputStream fos = new FileOutputStream("received.jpg");
 
             byte[] buffer = new byte[1024];
             int bytesRead;
