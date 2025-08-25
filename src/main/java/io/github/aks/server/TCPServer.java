@@ -18,7 +18,7 @@ public class TCPServer {
                 Socket socket = serverSocket.accept();
                 System.out.println("[CONNECTION] connected to: " + socket.getInetAddress());
 
-
+                new Thread(new ClientHandler(socket)).start();
             }
         }catch(IOException e){
             e.printStackTrace();
