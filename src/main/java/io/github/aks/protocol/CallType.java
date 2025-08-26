@@ -3,5 +3,5 @@ package io.github.aks.protocol;
 import java.io.IOException;
 
 public interface CallType {
-    void handle(String header) throws IOException;
+    void handle(String filename, byte[] data) throws IOException;
 }

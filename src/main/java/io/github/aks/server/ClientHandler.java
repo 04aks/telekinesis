@@ -4,11 +4,8 @@ import io.github.aks.protocol.CallType;
 import io.github.aks.protocol.CallTypeFactory;
 import io.github.aks.storage.DiskFileStorage;
 import io.github.aks.storage.FileStorage;
-import io.github.aks.util.Types;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.Set;
 
 public class ClientHandler implements Runnable{
 
@@ -27,12 +24,23 @@ public class ClientHandler implements Runnable{
             String header = reader.readLine();
             String[] parts = header.split(" ");
 
-            if(TCPServer.callTypeNames.contains(parts[0])){
-                CallType callType =
-                        CallTypeFactory.create("remove this param", socket, storage);
+            if(!TCPServer.callTypeNames.contains(parts[0])){
+                // the call doesn't concern us! perhaps
+                return;
             }
 
-            writer.println(parts[0].toUpperCase() + " READY");
+            CallType callType = CallTypeFactory.create(parts[0], storage);
+            System.out.println(parts[0].toUpperCase() + " READY");
+            writer.println("READY");
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[1024];
+            int bytesRead;
+            while((bytesRead = is.read(data)) != -1){
+                buffer.write(data, 0, bytesRead);
+            }
+
+            callType.handle(parts[1], buffer.toByteArray());
         }catch(IOException e){
             e.printStackTrace();
         }finally {

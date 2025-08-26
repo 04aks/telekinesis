@@ -1,8 +1,8 @@
 package io.github.aks.storage;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class DiskFileStorage implements FileStorage{
     private final String fileName;
@@ -11,13 +11,12 @@ public class DiskFileStorage implements FileStorage{
     }
 
     @Override
-    public void saveFile(InputStream data) throws IOException {
-        FileOutputStream fos = new FileOutputStream(fileName);
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while((bytesRead = data.read(buffer)) != -1){
-            fos.write(buffer, 0, bytesRead);
-        }
+    public void saveFile(String filename, byte[] data) throws IOException {
+        File outputFile = new File("received_" + filename);
+
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        fos.write(data);
+
         System.out.println("File {" + fileName + "} was received.");
         fos.close();
     }

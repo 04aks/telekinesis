@@ -2,14 +2,12 @@ package io.github.aks.protocol;
 
 import io.github.aks.storage.FileStorage;
 
-import java.net.Socket;
-
 public class CallTypeFactory {
-    public static CallType create(String type, Socket socket, FileStorage storage){
+    public static CallType create(String type, FileStorage storage){
 
         CallType callType = null;
         switch(type){
-            case "FILE_UPLOAD": callType = new UploadCallType(socket, storage); break;
+            case "FILE_UPLOAD": callType = new UploadCallType(storage); break;
         }
 
         return callType;
