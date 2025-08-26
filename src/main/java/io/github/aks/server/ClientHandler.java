@@ -1,11 +1,14 @@
 package io.github.aks.server;
 
+import io.github.aks.protocol.CallType;
+import io.github.aks.protocol.CallTypeFactory;
 import io.github.aks.storage.DiskFileStorage;
 import io.github.aks.storage.FileStorage;
+import io.github.aks.util.Types;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Set;
 
 public class ClientHandler implements Runnable{
 
@@ -18,7 +21,18 @@ public class ClientHandler implements Runnable{
     @Override
     public void run() {
         try(InputStream is = socket.getInputStream()){
-            storage.saveFile(is);
+
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String header = reader.readLine();
+            String[] parts = header.split(" ");
+
+            if(TCPServer.callTypeNames.contains(parts[0])){
+                CallType callType =
+                        CallTypeFactory.create("remove this param", socket, storage);
+            }
+
+            writer.println(parts[0].toUpperCase() + " READY");
         }catch(IOException e){
             e.printStackTrace();
         }finally {
