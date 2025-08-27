@@ -1,13 +1,16 @@
 package io.github.aks.server;
 
+import io.github.aks.exceptions.InvalidCallTypeException;
 import io.github.aks.protocol.CallType;
 import io.github.aks.protocol.CallTypeFactory;
 import io.github.aks.storage.DiskFileStorage;
 import io.github.aks.storage.FileStorage;
 import io.github.aks.storage.FileStorageFactory;
+import io.github.aks.util.Types;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Optional;
 
 public class ClientHandler implements Runnable{
 
@@ -25,9 +28,14 @@ public class ClientHandler implements Runnable{
             String header = reader.readLine();
             String[] parts = header.split(" ");
 
-            if(!TCPServer.callTypeNames.contains(parts[0])){
-                // the call doesn't concern us! perhaps
+            // the header contains 4 parts
+            if(parts.length != 4){
                 return;
+            }
+            // irrelevant call type
+            Optional<Types> type = Types.fromString(parts[0]);
+            if(type.isEmpty() || type == null){
+                throw new InvalidCallTypeException(parts[0]);
             }
 
             storage = FileStorageFactory.storageUnit(parts[3], parts[1]);
@@ -43,6 +51,8 @@ public class ClientHandler implements Runnable{
             }
 
             callType.handle(buffer.toByteArray());
+        }catch(InvalidCallTypeException e){
+            System.err.println(e.getMessage());
         }catch(IOException e){
             e.printStackTrace();
         }finally {

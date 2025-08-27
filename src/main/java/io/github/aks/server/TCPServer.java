@@ -1,18 +1,11 @@
 package io.github.aks.server;
 
-import io.github.aks.util.Types;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
 
 public class TCPServer {
     private final int port;
-    public static Set<String> callTypeNames =
-                Set.of(
-                        Types.FILE_UPLOAD.toString()
-                );
 
     public TCPServer(int port){
         this.port = port;
