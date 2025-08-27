@@ -10,8 +10,8 @@ public class UploadCallType implements CallType{
     }
 
     @Override
-    public void handle(String filename, byte[] data) throws IOException {
+    public void handle(byte[] data) throws IOException {
 
-        fileStorage.saveFile(filename, data);
+        fileStorage.saveFile(data);
     }
 }

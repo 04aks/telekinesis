@@ -11,13 +11,13 @@ public class DiskFileStorage implements FileStorage{
     }
 
     @Override
-    public void saveFile(String filename, byte[] data) throws IOException {
-        File outputFile = new File("received_" + filename);
+    public void saveFile(byte[] data) throws IOException {
+        File outputFile = new File("received_" + fileName);
 
         FileOutputStream fos = new FileOutputStream(outputFile);
         fos.write(data);
 
-        System.out.println("File {" + fileName + "} was received.");
+        System.out.println("File {" + outputFile.getName() + "} was received.");
         fos.close();
     }
 }

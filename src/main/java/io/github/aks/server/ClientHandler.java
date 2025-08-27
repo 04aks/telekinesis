@@ -4,16 +4,17 @@ import io.github.aks.protocol.CallType;
 import io.github.aks.protocol.CallTypeFactory;
 import io.github.aks.storage.DiskFileStorage;
 import io.github.aks.storage.FileStorage;
+import io.github.aks.storage.FileStorageFactory;
+
 import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable{
 
     private final Socket socket;
-    private final FileStorage storage;
+    private FileStorage storage;
     public ClientHandler(Socket socket){
         this.socket = socket;
-        this.storage = new DiskFileStorage("received.jpg"); // FOR NOW
     }
     @Override
     public void run() {
@@ -29,6 +30,7 @@ public class ClientHandler implements Runnable{
                 return;
             }
 
+            storage = FileStorageFactory.storageUnit(parts[3], parts[1]);
             CallType callType = CallTypeFactory.create(parts[0], storage);
             System.out.println(parts[0].toUpperCase() + " READY");
             writer.println("READY");
@@ -40,7 +42,7 @@ public class ClientHandler implements Runnable{
                 buffer.write(data, 0, bytesRead);
             }
 
-            callType.handle(parts[1], buffer.toByteArray());
+            callType.handle(buffer.toByteArray());
         }catch(IOException e){
             e.printStackTrace();
         }finally {
