@@ -1,21 +1,18 @@
 package io.github.aks.server;
 
-import io.github.aks.exceptions.InvalidCallTypeException;
+import io.github.aks.exceptions.InvalidHeaderException;
 import io.github.aks.protocol.CallType;
 import io.github.aks.protocol.CallTypeFactory;
-import io.github.aks.storage.DiskFileStorage;
+import io.github.aks.protocol.Header;
 import io.github.aks.storage.FileStorage;
 import io.github.aks.storage.FileStorageFactory;
-import io.github.aks.util.Types;
-
+import io.github.aks.util.FileReceiver;
 import java.io.*;
 import java.net.Socket;
-import java.util.Optional;
 
 public class ClientHandler implements Runnable{
 
     private final Socket socket;
-    private FileStorage storage;
     public ClientHandler(Socket socket){
         this.socket = socket;
     }
@@ -25,33 +22,20 @@ public class ClientHandler implements Runnable{
 
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String header = reader.readLine();
-            String[] parts = header.split(" ");
+            String headerRaw = reader.readLine();
 
-            // the header contains 4 parts
-            if(parts.length != 4){
-                return;
-            }
-            // irrelevant call type
-            Optional<Types> type = Types.fromString(parts[0]);
-            if(type.isEmpty() || type == null){
-                throw new InvalidCallTypeException(parts[0]);
-            }
+            Header header = new Header(headerRaw);
 
-            storage = FileStorageFactory.storageUnit(parts[3], parts[1]);
-            CallType callType = CallTypeFactory.create(parts[0], storage);
-            System.out.println(parts[0].toUpperCase() + " READY");
+            FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
+            CallType callType = CallTypeFactory.create(header.getType().toString(), storage);
+
+            System.out.println(header.getType().toString().toUpperCase() + "READY");
             writer.println("READY");
 
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] data = new byte[1024];
-            int bytesRead;
-            while((bytesRead = is.read(data)) != -1){
-                buffer.write(data, 0, bytesRead);
-            }
+            byte[] fileData = FileReceiver.receive(is);
+            callType.handle(fileData);
 
-            callType.handle(buffer.toByteArray());
-        }catch(InvalidCallTypeException e){
+        }catch(InvalidHeaderException e){
             System.err.println(e.getMessage());
         }catch(IOException e){
             e.printStackTrace();
