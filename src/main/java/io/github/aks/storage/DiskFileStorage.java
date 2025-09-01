@@ -3,6 +3,8 @@ package io.github.aks.storage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DiskFileStorage implements FileStorage{
     private final String fileName;
@@ -12,12 +14,16 @@ public class DiskFileStorage implements FileStorage{
 
     @Override
     public void saveFile(byte[] data) throws IOException {
-        File outputFile = new File("received_" + fileName);
+        String home = System.getProperty("user.home");
+        Path downloadDir = Paths.get(home, "Downloads");
+        Path filePath = downloadDir.resolve("received_" + fileName);
+
+        File outputFile = filePath.toFile();
 
         FileOutputStream fos = new FileOutputStream(outputFile);
         fos.write(data);
 
-        System.out.println("File {" + outputFile.getName() + "} was received.");
+        System.out.println("File {" + outputFile.getName() + "} was saved in {" + filePath + "}");
         fos.close();
     }
 }

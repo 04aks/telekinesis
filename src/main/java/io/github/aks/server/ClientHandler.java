@@ -29,7 +29,6 @@ public class ClientHandler implements Runnable{
             FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
             CallType callType = CallTypeFactory.create(header.getType().toString(), storage);
 
-            System.out.println(header.getType().toString().toUpperCase() + "READY");
             writer.println("READY");
 
             byte[] fileData = FileReceiver.receive(is);
