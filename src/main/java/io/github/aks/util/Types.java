@@ -3,7 +3,8 @@ package io.github.aks.util;
 import java.util.Optional;
 
 public enum Types {
-    FILE_UPLOAD;
+    FILE_UPLOAD,
+    DIR_UPLOAD;
 
     public static Optional<Types> fromString(String value){
         try{
