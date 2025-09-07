@@ -7,7 +7,8 @@ public class CallTypeFactory {
 
         CallType callType = null;
         switch(type){
-            case "FILE_UPLOAD": callType = new UploadCallType(storage); break;
+            case "FILE_UPLOAD": callType = new DownloadFileCall(storage); break;
+            case "DIR_UPLOAD": callType = new DownloadDirCall(storage); break;
         }
 
         return callType;

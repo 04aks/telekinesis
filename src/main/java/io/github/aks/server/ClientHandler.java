@@ -6,7 +6,6 @@ import io.github.aks.protocol.CallTypeFactory;
 import io.github.aks.protocol.Header;
 import io.github.aks.storage.FileStorage;
 import io.github.aks.storage.FileStorageFactory;
-import io.github.aks.util.FileReceiver;
 import java.io.*;
 import java.net.Socket;
 
@@ -31,8 +30,7 @@ public class ClientHandler implements Runnable{
 
             writer.println("READY");
 
-            byte[] fileData = FileReceiver.receive(is);
-            callType.handle(fileData);
+            callType.handle(is);
 
         }catch(InvalidHeaderException e){
             System.err.println(e.getMessage());
