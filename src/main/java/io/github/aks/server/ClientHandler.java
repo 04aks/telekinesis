@@ -24,6 +24,7 @@ public class ClientHandler implements Runnable{
             String headerRaw = reader.readLine();
 
             Header header = new Header(headerRaw);
+            System.out.println(header.getFilename());
 
             FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
             CallType callType = CallTypeFactory.create(header.getType().toString(), storage);

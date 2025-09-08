@@ -30,8 +30,18 @@ public class DiskFileStorage implements FileStorage{
     @Override
     public void saveDir() throws IOException{
         String home = System.getProperty("user.home");
+
+        // sub dirs have got a slash (when sending dirs with sub dirs)
+        if(fileName.contains("/")){
+            String[] parts = new String[2];
+            parts[0] = fileName.substring(0, fileName.lastIndexOf("/"));
+            parts[1] = fileName.substring(fileName.lastIndexOf("/"), fileName.length());
+            System.out.println(fileName);   
+        }
+        
+
         Path downloadDir = Paths.get(home, "Downloads");
-        Path dirPath = downloadDir.resolve("received_" + fileName);
+        Path dirPath = downloadDir.resolve(fileName);
 
         Files.createDirectory(dirPath);
     }
