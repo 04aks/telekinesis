@@ -21,17 +21,29 @@ public class ClientHandler implements Runnable{
 
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String headerRaw = reader.readLine();
+            String headerRaw;
 
-            Header header = new Header(headerRaw);
-            System.out.println(header.getFilename());
+            /*
+             * read headers inside a loop 
+             * donnu how I missed this (previous commit)
+             * we never making it out bruv.
+             */
+            while((headerRaw = reader.readLine()) != null){
+                System.out.println(headerRaw);
+                if (headerRaw.isEmpty()) {
+                    continue;
+                }
+                Header header = new Header(headerRaw);
+                
+            
+                FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
+                CallType callType = CallTypeFactory.create(header.getType().toString(), storage);
 
-            FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
-            CallType callType = CallTypeFactory.create(header.getType().toString(), storage);
+                writer.println("READY");
 
-            writer.println("READY");
-
-            callType.handle(is);
+                callType.handle(is);
+                System.out.println();
+            }
 
         }catch(InvalidHeaderException e){
             System.err.println(e.getMessage());
