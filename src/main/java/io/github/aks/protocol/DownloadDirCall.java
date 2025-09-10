@@ -1,7 +1,8 @@
 package io.github.aks.protocol;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import io.github.aks.storage.FileStorage;
 
@@ -12,8 +13,10 @@ public class DownloadDirCall implements CallType{
     }
 
     @Override
-    public void handle(InputStream is) throws IOException {
+    public void handle(DataInputStream is, DataOutputStream dos, long size) throws IOException {
         storage.saveDir();
+        dos.writeUTF("DONE");
+        dos.flush();
     }
     
 }

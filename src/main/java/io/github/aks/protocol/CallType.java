@@ -1,8 +1,9 @@
 package io.github.aks.protocol;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public interface CallType {
-    void handle(InputStream is) throws IOException;
+    void handle(DataInputStream is, DataOutputStream dos, long size) throws IOException;
 }

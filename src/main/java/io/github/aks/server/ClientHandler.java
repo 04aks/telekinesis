@@ -19,29 +19,31 @@ public class ClientHandler implements Runnable{
     public void run() {
         try(InputStream is = socket.getInputStream()){
 
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String headerRaw;
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
 
             /*
-             * read headers inside a loop 
-             * donnu how I missed this (previous commit)
-             * we never making it out bruv.
+             * juggle both Headers and File data with InputStream
+             * BufferedReader WITH InputStream was irrational
              */
-            while((headerRaw = reader.readLine()) != null){
-                System.out.println(headerRaw);
-                if (headerRaw.isEmpty()) {
-                    continue;
+            while(true){
+                String headerRaw;
+                try{
+                    headerRaw = dis.readUTF();
+                }catch(EOFException e){
+                    break;
                 }
+                if(headerRaw == null || headerRaw.isEmpty()) continue;
                 Header header = new Header(headerRaw);
                 
             
                 FileStorage storage = FileStorageFactory.storageUnit(header.getStorageUnit(), header.getFilename());
                 CallType callType = CallTypeFactory.create(header.getType().toString(), storage);
 
-                writer.println("READY");
+                dos.writeUTF("READY");
+                dos.flush();
 
-                callType.handle(is);
+                callType.handle(dis, dos, header.getFileLength());
                 System.out.println();
             }
 
